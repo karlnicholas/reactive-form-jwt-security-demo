@@ -1,24 +1,19 @@
 package com.github.karlnicholas.webfluxjwtsecurity.configuration;
 
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.function.Function;
 
-import javax.security.auth.login.AccountLockedException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.ReactiveAuthenticationManager;
-import org.springframework.security.authorization.AuthenticatedReactiveAuthorizationManager;
 import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity;
-import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.server.SecurityWebFilterChain;
@@ -28,6 +23,10 @@ import org.springframework.security.web.server.authentication.ServerAuthenticati
 import org.springframework.security.web.server.context.NoOpServerSecurityContextRepository;
 import org.springframework.security.web.server.savedrequest.NoOpServerRequestCache;
 import org.springframework.security.web.server.util.matcher.ServerWebExchangeMatchers;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.reactive.CorsConfigurationSource;
+import org.springframework.web.cors.reactive.CorsWebFilter;
+import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 import org.springframework.web.server.ServerWebExchange;
 
 import com.github.karlnicholas.webfluxjwtsecurity.service.UserService;
@@ -56,6 +55,21 @@ public class WebSecurityConfig {
         this.userService = userService;
     }
 
+
+    @Bean
+    public CorsConfigurationSource corsConfiguration() {
+        CorsConfiguration corsConfig = new CorsConfiguration();
+        corsConfig.applyPermitDefaultValues();
+        corsConfig.addAllowedMethod(HttpMethod.PUT);
+        corsConfig.addAllowedMethod(HttpMethod.DELETE);
+        corsConfig.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
+
+        UrlBasedCorsConfigurationSource source =
+                new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", corsConfig);
+        return source;
+    }
+    
     @Bean
     public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) throws JOSEException {
         return http
@@ -77,11 +91,11 @@ public class WebSecurityConfig {
                     .disable()
                 .httpBasic()
                     .disable()
-                .formLogin()
+//                .formLogin()
 //                	.disable()
-                	.authenticationSuccessHandler(addCookie())
+//                	.authenticationSuccessHandler(addCookie())
 //                    .loginPage("/login")
-            	.and()
+//            	.and()
 //                    .logout(logout -> logout.requiresLogout(new PathPatternParserServerWebExchangeMatcher("/auth/logout")))
                 .exceptionHandling()
                     .authenticationEntryPoint((swe, e) -> {

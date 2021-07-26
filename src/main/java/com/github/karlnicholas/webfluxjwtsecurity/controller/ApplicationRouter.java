@@ -18,15 +18,15 @@ public class ApplicationRouter {
 
     @Bean
     public RouterFunction<ServerResponse> routes(PublicHandler publicHandler, AuthHandler authHandler, UserHandler userHandler) {
-        return RouterFunctions.route(POST("/public/demo-user").and(accept(MediaType.APPLICATION_JSON)), publicHandler::handleDemoUser)
-			.andRoute(GET("/public/version").and(accept(MediaType.APPLICATION_JSON)), publicHandler::handleVersion)
-			.andRoute(GET("/user").and(accept(MediaType.APPLICATION_JSON)), userHandler::handleUser)
-		;
-//        return RouterFunctions.route(POST("/login").and(RequestPredicates.contentType(MediaType.MULTIPART_FORM_DATA)), authHandler::handleLogin)
-//    		.andRoute(POST("/logout").and(accept(MediaType.APPLICATION_FORM_URLENCODED)), authHandler::handleLogout)
-//    		.andRoute(POST("/public/demo-user").and(accept(MediaType.APPLICATION_JSON)), publicHandler::handleDemoUser)
+//        return RouterFunctions.route(POST("/public/demo-user").and(accept(MediaType.APPLICATION_JSON)), publicHandler::handleDemoUser)
 //			.andRoute(GET("/public/version").and(accept(MediaType.APPLICATION_JSON)), publicHandler::handleVersion)
 //			.andRoute(GET("/user").and(accept(MediaType.APPLICATION_JSON)), userHandler::handleUser)
 //		;
+        return RouterFunctions.route(POST("/login").and(RequestPredicates.contentType(MediaType.APPLICATION_JSON)), authHandler::handleLogin)
+    		.andRoute(POST("/logout").and(accept(MediaType.APPLICATION_FORM_URLENCODED)), authHandler::handleLogout)
+    		.andRoute(POST("/public/demo-user").and(accept(MediaType.APPLICATION_JSON)), publicHandler::handleDemoUser)
+			.andRoute(GET("/public/version").and(accept(MediaType.APPLICATION_JSON)), publicHandler::handleVersion)
+			.andRoute(GET("/user").and(accept(MediaType.APPLICATION_JSON)), userHandler::handleUser)
+		;
     }
 }

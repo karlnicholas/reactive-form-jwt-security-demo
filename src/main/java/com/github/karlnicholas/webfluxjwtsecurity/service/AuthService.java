@@ -83,12 +83,12 @@ public class AuthService {
 		}
 	}
 
-	public Mono<AuthResultDto> authenticate(Mono<MultiValueMap<String, String>> formDataMono) {
-		return formDataMono.flatMap(formData->{
-			return userRepository.findByUsername(formData.getFirst("exampleInputEmail1")).flatMap(user -> {
+	public Mono<AuthResultDto> authenticate(Mono<UserLoginDto> userLoginDtoMono) {
+		return userLoginDtoMono.flatMap(userLoginDto->{
+			return userRepository.findByUsername(userLoginDto.getUsername()).flatMap(user -> {
 				if (!user.isEnabled())
 					return Mono.error(new AccountLockedException("Account disabled."));
-				if (!passwordEncoder.matches(formData.getFirst("exampleInputPassword1"), user.getPassword()))
+				if (!passwordEncoder.matches(userLoginDto.getPassword(), user.getPassword()))
 					return Mono.error(new FailedLoginException("Failed Login!"));
 				return Mono.just(generateAccessToken(user));
 			});
