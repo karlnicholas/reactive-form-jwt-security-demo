@@ -21,9 +21,9 @@ import io.r2dbc.spi.ConnectionFactory;
  * @author Karl Nicholas
  */
 @SpringBootApplication
-public class WebfluxSecurityApplication {
+public class ReactiveFormSecurityApplication {
 	public static void main(String[] args) {
-		SpringApplication.run(WebfluxSecurityApplication.class, args);
+		SpringApplication.run(ReactiveFormSecurityApplication.class, args);
 	}
     @Bean
     ConnectionFactoryInitializer initializer(ConnectionFactory connectionFactory) {

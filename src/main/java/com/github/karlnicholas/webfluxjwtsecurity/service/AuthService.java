@@ -3,6 +3,7 @@ package com.github.karlnicholas.webfluxjwtsecurity.service;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.MultiValueMap;
 
 import com.github.karlnicholas.webfluxjwtsecurity.dto.AuthResultDto;
 import com.github.karlnicholas.webfluxjwtsecurity.dto.UserLoginDto;
@@ -82,15 +83,26 @@ public class AuthService {
 		}
 	}
 
-	public Mono<AuthResultDto> authenticate(Mono<UserLoginDto> userLoginMono) {
-		return userLoginMono.flatMap(userLogin -> {
-			return userRepository.findByUsername(userLogin.getUsername()).flatMap(user -> {
+	public Mono<AuthResultDto> authenticate(Mono<MultiValueMap<String, String>> formDataMono) {
+		return formDataMono.flatMap(formData->{
+			return userRepository.findByUsername(formData.getFirst("exampleInputEmail1")).flatMap(user -> {
 				if (!user.isEnabled())
 					return Mono.error(new AccountLockedException("Account disabled."));
-				if (!passwordEncoder.matches(userLogin.getPassword(), user.getPassword()))
+				if (!passwordEncoder.matches(formData.getFirst("exampleInputPassword1"), user.getPassword()))
 					return Mono.error(new FailedLoginException("Failed Login!"));
 				return Mono.just(generateAccessToken(user));
 			});
 		}).switchIfEmpty(Mono.error(new FailedLoginException("Failed Login!")));
 	}
+//	public Mono<AuthResultDto> authenticate(Mono<UserLoginDto> userLoginMono) {
+//		return userLoginMono.flatMap(userLogin -> {
+//			return userRepository.findByUsername(userLogin.getUsername()).flatMap(user -> {
+//				if (!user.isEnabled())
+//					return Mono.error(new AccountLockedException("Account disabled."));
+//				if (!passwordEncoder.matches(userLogin.getPassword(), user.getPassword()))
+//					return Mono.error(new FailedLoginException("Failed Login!"));
+//				return Mono.just(generateAccessToken(user));
+//			});
+//		}).switchIfEmpty(Mono.error(new FailedLoginException("Failed Login!")));
+//	}
 }
